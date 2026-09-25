@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher Key - Case #08 The Rigging Failure</title>
+<style>
+:root{--ink:#0d1117;--ink2:#131a24;--ink3:#1a2430;--amb:#e8a33d;--chalk:#e9e7e2;
+      --chalk-dim:#9aa3ad;--ok:#5fb87a;--no:#d1604f;--rule:#26313d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--chalk);
+  font:15px/1.6 "Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 22px 90px}
+h1{font-size:24px;margin:0}
+.caseno{font:600 12px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.22em;color:#a8762c;margin-bottom:8px}
+.lede{color:var(--chalk-dim);max-width:70ch;margin:14px 0 26px}
+textarea{width:100%;min-height:130px;background:var(--ink2);border:1px solid var(--rule);
+  color:var(--chalk);border-radius:2px;padding:13px;font:15px/1.7 inherit;resize:vertical}
+textarea:focus{border-color:var(--amb);outline:none}
+.btn{background:var(--amb);color:#17120a;border:0;border-radius:2px;padding:12px 24px;
+  font-size:15px;font-weight:700;cursor:pointer;margin-top:12px}
+.btn.ghost{background:transparent;color:var(--chalk-dim);border:1px solid var(--rule)}
+.team{background:var(--ink2);border:1px solid var(--rule);border-radius:3px;margin:20px 0;
+  overflow:hidden;break-inside:avoid;page-break-inside:avoid}
+.thead{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:14px 18px;border-bottom:1px solid var(--rule);background:var(--ink3)}
+.tname{font-weight:700;font-size:17px;letter-spacing:.06em}
+.verdict{font-weight:700;font-size:12.5px;letter-spacing:.08em;padding:5px 12px;border-radius:2px}
+.verdict.over{background:rgba(209,96,79,.16);color:var(--no);border:1px solid rgba(209,96,79,.4)}
+.verdict.ok{background:rgba(95,184,122,.16);color:var(--ok);border:1px solid rgba(95,184,122,.4)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:0}
+.col{padding:16px 18px;border-right:1px solid var(--rule)}
+.col:last-child{border-right:0}
+h4{margin:0 0 10px;font-size:11.5px;letter-spacing:.14em;color:var(--amb);font-weight:700}
+.row{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px dotted #202b36}
+.row:last-child{border-bottom:0}
+.row span:first-child{color:var(--chalk-dim)}
+.row span:last-child{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.note{padding:12px 18px;border-top:1px solid var(--rule);color:var(--chalk-dim);font-size:13.5px;line-height:1.6}
+@media print{
+  body{background:#fff;color:#000}.noprint{display:none}
+  .team,.col,.thead{background:#fff;border-color:#bbb}
+  h4{color:#7a5410}.row span:first-child{color:#555}
+  .verdict.over{color:#a32b18;border-color:#a32b18;background:#fff}
+  .verdict.ok{color:#1d6b36;border-color:#1d6b36;background:#fff}
+  .note{color:#444}
+}
+</style></head><body><div class="wrap">
+  <div class="caseno">EVIDENCE &amp; EQUATIONS &nbsp;&#183;&nbsp; CASE #08</div>
+  <h1>The Rigging Failure &#8212; Teacher Answer Key</h1>
+  <p class="lede">Paste your team names, one per line, exactly as students typed them. Spacing, case and punctuation are ignored. The verdict turns on the busier anchor as a percentage of the limit on <em>one</em> anchor&#8217;s tag &#8212; never the two added together.</p>
+  <div class="noprint">
+    <textarea id="names" placeholder="FULCRUM&#10;MOMENT&#10;SHACKLE&#10;TRUSS"></textarea>
+    <div><button class="btn" id="go">Generate key</button>
+    <button class="btn ghost" id="pr">Print / save as PDF</button></div>
+  </div>
+  <div id="out"></div>
+</div>
+<script>
+/* ===================== PHYSICS CORE ===================== */
+(function (root) {
+  'use strict';
+
+  var G = 9.81;
+  var TOL = 0.03;
+  var OVER = 108;     // % of rating at or above which the anchor was overloaded
+  var UNDER = 88;     // % of rating at or below which it was comfortably inside
+
+  function normalizeTeam(n){ return String(n||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+  function xmur3(str){var h=1779033703^str.length;for(var i=0;i<str.length;i++){
+    h=Math.imul(h^str.charCodeAt(i),3432918353);h=(h<<13)|(h>>>19);}
+    return function(){h=Math.imul(h^(h>>>16),2246822507);h=Math.imul(h^(h>>>13),3266489909);
+      h^=h>>>16;return h>>>0;};}
+  function mulberry32(a){return function(){a|=0;a=(a+0x6D2B79F5)|0;
+    var t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;
+    return((t^(t>>>14))>>>0)/4294967296;};}
+  function makeRng(t){var s=xmur3('E&E::CASE08::RIGGINGFAILURE::'+normalizeTeam(t));s();
+    return mulberry32(s());}
+  function rr(r,a,b){return a+r()*(b-a);}
+  function rstep(r,a,b,s){var n=Math.floor((b-a)/s)+1;return round(a+Math.floor(r()*n)*s,6);}
+  function round(v,d){var f=Math.pow(10,d);return Math.round(v*f)/f;}
+
+  function generate(teamName){
+    var rng = makeRng(teamName);
+
+    /* --- the rig, all surveyed --- */
+    var L      = rstep(rng, 8.0, 16.0, 0.5);        // truss length, m
+    var x_A    = rstep(rng, 0.8, 2.4, 0.1);         // anchor A from the left end
+    var x_B    = round(L - rstep(rng, 0.8, 2.4, 0.1), 1);
+    var m_beam = rstep(rng, 120, 420, 10);          // truss mass, kg
+    var m_load = rstep(rng, 300, 1200, 10);         // hung load, kg
+
+    var overloaded = rng() < 0.5;
+
+    /* Where along the span the load hangs. An overloaded case needs the load
+       well off-centre, otherwise the two anchors share too evenly for one to
+       exceed its own limit while the two tag ratings added together still cover the
+       total - which is the argument the cross-examination turns on. */
+    /* Which side the load sits on must not track the verdict. Mirroring the
+       rig half the time keeps "load far to the left" and "load far to the
+       right" equally likely to be overloaded, so nothing about the geometry
+       alone gives the answer away. */
+    var nearB = rng() < 0.5;
+    var p = overloaded
+          ? (nearB ? rr(rng, 0.74, 0.92) : rr(rng, 0.08, 0.26))
+          : (nearB ? rr(rng, 0.52, 0.90) : rr(rng, 0.10, 0.48));
+    var x_L = round(x_A + p * (x_B - x_A), 2);
+
+    var W_beam = m_beam * G / 1000;                 // kN
+    var W_load = m_load * G / 1000;                 // kN
+    var W_tot  = W_beam + W_load;
+
+    var span = x_B - x_A;
+    var T_B = (W_beam * (L / 2 - x_A) + W_load * (x_L - x_A)) / span;
+    var T_A = W_tot - T_B;
+
+    /* The load must never hang near the balance point. If it did, the two
+       tensions would be almost equal and "half the total" - the equal-sharing
+       error this whole case exists to expose - would fall inside the accepted
+       tolerance and be marked correct. Push the load off-centre until the
+       busier anchor carries at least 57% of the load. */
+    for (var gs = 0; gs < 60; gs++) {
+      var sh = Math.max(T_A, T_B) / (T_A + T_B) * 100;
+      /* An overloaded case needs more asymmetry than a safe one: the rating
+         has to sit above total/1.92 and below worse/1.09 at the same time,
+         and that window only opens once the busier anchor takes about 58%.
+         64% leaves comfortable room for rounding. */
+      if (sh >= (overloaded ? 64 : 57)) break;
+      p += (T_B >= T_A) ? 0.02 : -0.02;
+      p = Math.max(0.08, Math.min(0.95, p));
+      x_L = round(x_A + p * (x_B - x_A), 2);
+      T_B = (W_beam * (L / 2 - x_A) + W_load * (x_L - x_A)) / span;
+      T_A = W_tot - T_B;
+    }
+
+    var worse = Math.max(T_A, T_B);
+    var lighter = Math.min(T_A, T_B);
+
+    /* Choose a rating that puts the worse anchor firmly on one side of the
+       line, then round it to a size a real anchor is actually sold in. */
+    /* The rating is chosen inside a window, not guessed and then patched.
+       Two conditions must hold together:
+         - the total load stays below the SUM of the two tag ratings, so that
+           the contractor's cross-examination argument is factually true
+         - the busier anchor lands firmly on the intended side of its own limit
+       Solving for the window directly is what makes both hold every time. */
+    var STEP = 0.05;                                  // kN, the rating granularity
+    var factor = overloaded ? rr(rng, 1.12, 1.42) : rr(rng, 0.58, 0.84);
+    var rLo = (W_tot / 1.92) * 1.01;                  // above this, total < sum of ratings
+    var rating;
+
+    if (overloaded) {
+      var rHi = worse / 1.09;                         // below this, the anchor is over its limit
+      rating = Math.min(Math.max(worse / factor, rLo), rHi);
+      rating = Math.round(rating / STEP) * STEP;
+      if (rating < rLo) rating = Math.ceil(rLo / STEP) * STEP;
+      if (rating > rHi) rating = Math.floor(rHi / STEP) * STEP;
+    } else {
+      rating = Math.max(worse / factor, rLo);         // larger is safer on both counts
+      rating = Math.ceil(rating / STEP) * STEP;
+    }
+    rating = round(Math.max(rating, 1), 2);
+
+    /* --- what students should reach --- */
+    var a_Wbeam = m_beam * G / 1000;
+    var a_Wload = m_load * G / 1000;
+    var a_TB    = (a_Wbeam * (L / 2 - x_A) + a_Wload * (x_L - x_A)) / span;
+    var a_TA    = (a_Wbeam + a_Wload) - a_TB;
+    var a_worse = Math.max(a_TA, a_TB);
+    var a_share = a_worse / (a_TA + a_TB) * 100;     // % of the total on one anchor
+    var a_pct   = a_worse / rating * 100;            // % of that anchor's rating
+
+    /* sealed load cell, fitted to cable A on the night */
+    var cell = round(a_TA * (1 + rr(rng, -0.004, 0.004)), 3);
+    var a_xcheck = Math.abs(a_TA - cell) / cell * 100;
+
+    var verdict = a_pct >= OVER ? 'ANCHOR RATING EXCEEDED' : 'BOTH ANCHORS WITHIN RATING';
+
+    return {
+      team: normalizeTeam(teamName),
+      teamDisplay: String(teamName || '').trim(),
+
+      given: {
+        L: L, x_A: x_A, x_B: x_B, x_L: x_L,
+        m_beam: m_beam, m_load: m_load,
+        rating: rating, g: G,
+        combined: round(2 * rating, 2)
+      },
+
+      sealed: { cell: cell },
+
+      answers: {
+        W_beam: a_Wbeam,     // kN
+        W_load: a_Wload,     // kN
+        T_B: a_TB,           // kN
+        T_A: a_TA,           // kN
+        xcheck: a_xcheck,    // %
+        share: a_share,      // %
+        pct: a_pct           // % of rating
+      },
+
+      verdict: verdict,
+
+      truth: {
+        overloaded: overloaded,
+        worseAnchor: a_TA >= a_TB ? 'A' : 'B',
+        worse: a_worse,
+        lighter: Math.min(a_TA, a_TB),
+        ratio: a_worse / Math.min(a_TA, a_TB),
+        totalLoad: a_Wbeam + a_Wload,
+        /* the number the cross-examination turns on */
+        totalVsCombined: (a_Wbeam + a_Wload) / (2 * rating) * 100,
+        equalShareWrong: (a_Wbeam + a_Wload) / 2,   // what the naive answer gives
+        beamShareOfWorse: (a_Wbeam * (L / 2 - x_A) / span) / a_worse * 100
+      }
+    };
+  }
+
+  root.EE08 = { generate: generate, normalizeTeam: normalizeTeam,
+                G: G, TOL: TOL, OVER: OVER, UNDER: UNDER };
+})(window);
+
+/* ===================== APP ===================== */
+(function(){
+var $=function(s){return document.querySelector(s);};
+function f(v,d){return Number(v).toFixed(d);}
+function card(R){
+  var g=R.given,a=R.answers,t=R.truth;
+  var over=R.verdict==='ANCHOR RATING EXCEEDED';
+  function row(k,v){return '<div class="row"><span>'+k+'</span><span>'+v+'</span></div>';}
+  return '<div class="team">'
+  +'<div class="thead"><div class="tname">'+R.team+'</div>'
+  +'<div class="verdict '+(over?'over':'ok')+'">'
+  +(over?'ANCHOR RATING EXCEEDED':'BOTH ANCHORS WITHIN RATING')+'</div></div>'
+  +'<div class="cols">'
+  +'<div class="col"><h4>EVIDENCE GIVEN</h4>'
+  + row('Truss length', f(g.L,1)+' m') + row('Truss mass', g.m_beam+' kg')
+  + row('Anchor A at', f(g.x_A,1)+' m') + row('Anchor B at', f(g.x_B,1)+' m')
+  + row('Load mass', g.m_load+' kg') + row('Hung at', f(g.x_L,2)+' m')
+  + row('Rating, each anchor', f(g.rating,2)+' kN')
+  + row('Sealed load cell A', f(R.sealed.cell,3)+' kN')
+  +'</div>'
+  +'<div class="col"><h4>STAGE ANSWERS</h4>'
+  + row('1 &#183; Truss weight', f(a.W_beam,3)+' kN')
+  + row('2 &#183; Load weight', f(a.W_load,3)+' kN')
+  + row('3 &#183; Tension B', f(a.T_B,3)+' kN')
+  + row('4 &#183; Tension A', f(a.T_A,3)+' kN')
+  + row('5 &#183; Cross-check', f(a.xcheck,2)+' % (&#177;0.15)')
+  + row('6 &#183; Share, busier anchor', f(a.share,1)+' %')
+  + row('7 &#183; Percent of rating', f(a.pct,1)+' %')
+  +'</div>'
+  +'<div class="col"><h4>WHAT ACTUALLY HAPPENED</h4>'
+  + row('Busier anchor', t.worseAnchor+' at '+f(t.worse,2)+' kN')
+  + row('Lighter anchor', f(t.lighter,2)+' kN')
+  + row('Ratio between them', f(t.ratio,2)+' &#215;')
+  + row('Total load', f(t.totalLoad,2)+' kN')
+  + row('Tag ratings sum to', f(g.combined,2)+' kN')
+  + row('Total vs ratings sum', f(t.totalVsCombined,1)+' %')
+  + row('Equal-share wrong answer', f(t.equalShareWrong,3)+' kN')
+  +'</div></div>'
+  +'<div class="note">'
+  + (over
+     ? 'Anchor '+t.worseAnchor+' carried <strong>'+f(a.pct,1)+'%</strong> of its own rating. Note that the total load is only '
+       +f(t.totalVsCombined,1)+'% of the two tag ratings added together, so the contractor&#8217;s argument in cross-examination is factually correct and still wrong.'
+     : 'The busier anchor reached <strong>'+f(a.pct,1)+'%</strong> of its own rating, comfortably inside. Load position does not account for the failure &#8212; and students must not conclude the anchors were therefore defective, which this evidence cannot show.')
+  + ' Watch for <strong>'+f(t.equalShareWrong,3)+' kN</strong> at stages 3 or 4: that is half the total, the equal-sharing error. It is at least 12% from either true tension in every generated case, so it is always a wrong answer, and the app names it.'
+  +'</div></div>';
+}
+$('#go').addEventListener('click',function(){
+  var names=$('#names').value.split(/\n/).map(function(s){return s.trim();})
+    .filter(function(s){return EE08.normalizeTeam(s).length>=3;});
+  if(!names.length){$('#out').innerHTML='<p style="color:#d1604f">Enter at least one team name of three or more characters.</p>';return;}
+  var seen={},uniq=[];
+  names.forEach(function(x){var k=EE08.normalizeTeam(x);if(!seen[k]){seen[k]=1;uniq.push(x);}});
+  var rs=uniq.map(function(x){return EE08.generate(x);});
+  var no=rs.filter(function(r){return r.verdict==='ANCHOR RATING EXCEEDED';}).length;
+  $('#out').innerHTML='<p class="lede" style="margin-top:26px">'+rs.length+' teams &#183; '
+    +no+' rating exceeded &#183; '+(rs.length-no)+' within rating</p>'+rs.map(card).join('');
+});
+$('#pr').addEventListener('click',function(){window.print();});
+})();
+</script></body></html>
